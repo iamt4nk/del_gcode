@@ -1,19 +1,13 @@
-#!/bin/bash
-# del_gcode uninstall script for ZMOD
-# https://github.com/iamt4nk/del_gcode
+#!/bin/sh
 
-# Remove the Moonraker component symlink
-for candidate in \
-	/root/moonraker/moonraker/components \
-	/home/pi/moonraker/moonraker/components \
-	/home/mks/moonraker/moonraker/components; do
-	if [ -d "${candidate}/del_gcode.py" ]; then
-		rm -f "${candidate}/del_gcode.py"
-		echo "del_gcode: Removed Moonraker component from ${candidate}"
-		break
-	fi
-done
+source /opt/config/mod/.shell/0.sh
 
-echo "del_gcode: Uninstallation complete"
-echo "del_gcode: Remember to remove [del_gcode] from mod_data/user.moonraker.conf"
-echo "del_gcode: Remember to remove REMOVE_GCODE from your slicer start G-code"
+FILE="/opt/config/mod_data/plugins.moonraker.conf"
+
+sed -i "\|plugins/del_gcode/${ZLANG}/notify\.moonraker\.cfg|d" "$FILE"
+
+rm -f /opt/config/mod/.shell/root/moonraker/components/del_gcode.py
+rm -rf /root/printer_data/gcodes/del_gcode
+
+echo "Moonraker Del-Gcode uninstalled"
+echo "REBOOT" >/tmp/printer
