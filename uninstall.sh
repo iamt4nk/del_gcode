@@ -6,7 +6,7 @@ FILE="/opt/config/mod_data/plugins.moonraker.conf"
 
 sed -i "\|plugins/del_gcode/del_gcode\.moonraker\.cfg|d" "$FILE"
 
-rm /opt/conifg/mod/.shell/del_gcode.py
+rm -f /usr/data/config/base/moonraker/components/del_gcode.py
 
 echo "Moonraker Del-Gcode uninstalled"
 echo "REBOOT" >/tmp/printer
