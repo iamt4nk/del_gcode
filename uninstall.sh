@@ -2,7 +2,7 @@
 
 source /opt/config/mod/.shell/0.sh
 
-FILE="/opt/config/mod_data/plugins.moonraker.cfg"
+FILE="/opt/config/mod_data/plugins.moonraker.conf"
 
 sed -i "\|plugins/del_gcode/del_gcode\.moonraker\.cfg|d" "$FILE"
 
