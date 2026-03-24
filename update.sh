@@ -6,7 +6,7 @@ set -e
 
 source /opt/config/mod/.shell/0.sh
 
-cp del_gcode.py /opt/config/mod/.shell/
+ln -s del_gcode.py /opt/config/mod/.shell/del_gcode.py
 
 INC="[include plugins/del_gcode/moonraker.cfg]"
 FILE="/opt/config/mod_data/plugins.moonraker.cfg"
