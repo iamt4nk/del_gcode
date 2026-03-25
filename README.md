@@ -32,9 +32,9 @@ After installation, reboot your printer.
 
 ## Slicer Setup
 
-Add `REMOVE_GCODE` to your slicer's **start G-code**, before `START_PRINT`. For example:
+Add `REMOVE_AFTER_PRINT` to your slicer's **start G-code**. For example:
 
-```gcode
+```
 REMOVE_GCODE
 START_PRINT ...
 ```
