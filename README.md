@@ -23,6 +23,11 @@ is_system_service: False
 primary_branch: master
 ```
 
+Then enable it with:
+```
+ENABLE_PLUGIN NAME=del_gcode
+```
+
 After installation, reboot your printer.
 
 ## Slicer Setup
@@ -48,12 +53,10 @@ Returns the filename currently pending deletion, or `null` if none.
 
 ## Uninstalling
 
-```sh
-cd /opt/config/mod/plugins/del_gcode
-./uninstall.sh
+Run the following command in the fluidd/mainsail console:
 ```
-
-Remove the `REMOVE_GCODE` macro from your Klipper config and reboot.
+DISABLE_PLUGIN NAME=del_gcode
+```
 
 ## License
 
