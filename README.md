@@ -1,10 +1,10 @@
 # del_gcode
 
-A [Moonraker](https://github.com/Arksine/moonraker) plugin that automatically deletes G-code files after a successful print. Deletion is triggered on a per-file basis from your slicer's start G-code, so you have full control over which files are cleaned up.
+A [Moonraker](https://github.com/Arksine/moonraker) plugin that automatically deletes G-code files after a successful print. Deletion is triggered on a per-file basis from your slicer's start G-code, so you have full control over which files are cleaned up. This is especially useful for instances such as calibration prints where the file is not needed on the printer afterwards.
 
 ## How It Works
 
-1. You add `REMOVE_GCODE` to a file's start G-code in your slicer (before `START_PRINT`).
+1. You add `REMOVE_AFTER_PRINT` to a file's start G-code in your slicer (before `START_PRINT`).
 2. When the print starts, the macro calls into the Moonraker component and flags the currently printing file for deletion.
 3. Once the print completes, the plugin deletes the file automatically.
 
@@ -32,10 +32,10 @@ After installation, reboot your printer.
 
 ## Slicer Setup
 
-Add `REMOVE_AFTER_PRINT` to your slicer's **start G-code**. For example:
+Add `REMOVE_AFTER_PRINT` anywhere to your slicer's **start G-code**. For example:
 
 ```
-REMOVE_GCODE
+REMOVE_AFTER_PRINT
 START_PRINT ...
 ```
 
