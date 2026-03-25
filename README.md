@@ -13,7 +13,7 @@ If the print is cancelled or errors out, the file is **not** deleted — so you 
 ## Installation (ZMOD)
 
 Edit your `mod_data/user.moonraker.conf` file and add the following:
-```toml
+```
 [update_manager del_gcode]
 type: git_repo
 channel: dev
