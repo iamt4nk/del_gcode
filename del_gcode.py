@@ -25,6 +25,8 @@ class DelGcode:
         self.name = config.get_name()
         self.pending_delete: str | None = None
 
+        self.delete_on_operation = config.getlist("delete_on", ["complete", "standby"])
+
         # Register remote method callable from Klipper macros
         self.server.register_remote_method("del_gcode_mark", self._mark_for_deletion)
 
@@ -44,8 +46,6 @@ class DelGcode:
 
     def _mark_for_deletion(self) -> None:
         """Call this to flag a file for deletion"""
-        klippy_apis = self.server.lookup_component("klippy_apis")
-
         event_loop = self.server.get_event_loop()
         event_loop.register_callback(self._async_mark_for_deletion)
 
@@ -75,17 +75,15 @@ class DelGcode:
             return
 
         # The file is released by virtual_sdcard once the state transitions to "complete" or "standby"
-        if state in ("complete", "standby"):
+        if state in ("complete", "standby", "cancelled", "error"):
             filename = self.pending_delete
             self.pending_delete = None
-            await self._delete_file(filename)
-        elif state in ("error", "cancelled"):
-            # Don't delete on error or cancel - the user may want to retry
-            cancelled_file = self.pending_delete
-            self.pending_delete = None
-            logger.info(
-                f"del_gcode: Print {state}, skipping deletion of: {cancelled_file}"
-            )
+            if state in self.delete_on_operation:
+                await self._delete_file(filename)
+            else:
+                logger.info(
+                    f"del_gcode: Print {state}, skipping deletion of: {filename}"
+                )
 
     async def _delete_file(self, filename: str) -> None:
         """Delete the gcode file via Moonraker's file manager"""
