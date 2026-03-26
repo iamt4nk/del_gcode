@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class DelGcode:
     def __init__(self, config: ConfigHelper) -> None:
+        self.config = config
         self.delete_on = config.getlist("delete_on", ["complete", "standby"])
         self.server = config.get_server()
         self.name = config.get_name()
@@ -99,9 +100,7 @@ class DelGcode:
 
     async def _handle_status_request(self, web_request) -> dict:
         """API endpoint to check the current state."""
-        return {
-            "pending_delete": self.pending_delete,
-        }
+        return {"pending_delete": self.pending_delete, "config": self.config}
 
 
 def load_component(config: ConfigHelper) -> DelGcode:
