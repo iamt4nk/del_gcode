@@ -26,9 +26,7 @@ logger = logging.getLogger(__name__)
 
 class DelGcode:
     def __init__(self, config: ConfigHelper) -> None:
-        self.delete_on = config.getlist(
-            "delete_on", ["complete", "standby"], separator=", "
-        )
+        self.delete_on = config.getlist("delete_on", ["complete"], separator=", ")
         self.server = config.get_server()
         self.name = config.get_name()
         self.pending_delete: str | None = None
@@ -76,7 +74,7 @@ class DelGcode:
         """Watch for print completion to perform deletion"""
 
         job_evt = str(job_event)
-        logger.info(f"del_gcode: Caught job state change - {job_evt}")
+        logger.debug(f"del_gcode: Caught job state change - {job_evt}")
 
         if self.pending_delete is None:
             return
@@ -85,7 +83,7 @@ class DelGcode:
             filename = self.pending_delete
             self.pending_delete = None
             await self._delete_file(filename)
-        elif job_evt in ("complete", "cancelled", "error", "standby"):
+        elif job_evt in ("complete", "cancelled", "error"):
             filename = self.pending_delete
             self.pending_delete = None
             logger.info(f"del_gcode: Print {job_evt}, skipping deletion of: {filename}")
