@@ -26,7 +26,9 @@ logger = logging.getLogger(__name__)
 
 class DelGcode:
     def __init__(self, config: ConfigHelper) -> None:
-        self.delete_on = config.getlist("delete_on", ["complete", "standby"])
+        self.delete_on = config.getlist(
+            "delete_on", ["complete", "standby"], separator=", "
+        )
         self.server = config.get_server()
         self.name = config.get_name()
         self.pending_delete: str | None = None
