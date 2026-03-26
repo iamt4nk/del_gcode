@@ -8,7 +8,7 @@ A [Moonraker](https://github.com/Arksine/moonraker) plugin that automatically de
 2. When the print starts, the macro calls into the Moonraker component and flags the currently printing file for deletion.
 3. Once the print completes, the plugin deletes the file automatically.
 
-If the print is cancelled or errors out, the file is **not** deleted — so you can retry without reslicing.
+If the print is cancelled or errors out, the file is **not** deleted by default.
 
 ## Installation (ZMOD)
 
@@ -29,6 +29,13 @@ ENABLE_PLUGIN NAME=del_gcode
 ```
 
 After installation, reboot your printer.
+
+## Configuration
+By default, del_gcode only deletes on complete prints. To make it delete on cancel or error edit the user.moonraker.conf file:
+```
+[del_gcode]
+delete_on: complete, error, cancel
+```
 
 ## Slicer Setup
 
@@ -60,4 +67,4 @@ DISABLE_PLUGIN NAME=del_gcode
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE) for details.
+Apache License 2.0 - [LICENSE](LICENSE) for details.
