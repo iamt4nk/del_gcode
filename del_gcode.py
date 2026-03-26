@@ -10,8 +10,13 @@
 from __future__ import annotations
 
 import logging
+from ..common import JobEvent
 
-from typing import TYPE_CHECKING
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    Any,
+)
 
 if TYPE_CHECKING:
     from moonraker.confighelper import ConfigHelper
@@ -21,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class DelGcode:
     def __init__(self, config: ConfigHelper) -> None:
+        self.delete_on = config.getlist("delete_on", ["complete"], separator=", ")
         self.server = config.get_server()
         self.name = config.get_name()
         self.pending_delete: str | None = None
@@ -28,9 +34,8 @@ class DelGcode:
         # Register remote method callable from Klipper macros
         self.server.register_remote_method("del_gcode_mark", self._mark_for_deletion)
 
-        # Listen for print state changes to perform the actual deletion
         self.server.register_event_handler(
-            "server:status_update", self._on_status_update
+            "job_state:state_changed", self._on_job_state_changed
         )
 
         # Register API endpoint for status/debugging
@@ -63,29 +68,25 @@ class DelGcode:
         except Exception as e:
             logger.error(f"del_gcode: Error marking file: {e}")
 
-    async def _on_status_update(self, status: dict) -> None:
+    async def _on_job_state_changed(
+        self, job_event: JobEvent, prev_stats: Dict[str, Any], new_stats: Dict[str, Any]
+    ) -> None:
         """Watch for print completion to perform deletion"""
+
+        job_evt = str(job_event)
+        logger.debug(f"del_gcode: Caught job state change - {job_evt}")
+
         if self.pending_delete is None:
             return
 
-        print_stats = status.get("print_stats", {})
-        state = print_stats.get("state")
-
-        if state is None:
-            return
-
-        # The file is released by virtual_sdcard once the state transitions to "complete" or "standby"
-        if state in ("complete", "standby"):
+        if job_evt in self.delete_on:
             filename = self.pending_delete
             self.pending_delete = None
             await self._delete_file(filename)
-        elif state in ("error", "cancelled"):
-            # Don't delete on error or cancel - the user may want to retry
-            cancelled_file = self.pending_delete
+        elif job_evt in ("complete", "cancelled", "error"):
+            filename = self.pending_delete
             self.pending_delete = None
-            logger.info(
-                f"del_gcode: Print {state}, skipping deletion of: {cancelled_file}"
-            )
+            logger.info(f"del_gcode: Print {job_evt}, skipping deletion of: {filename}")
 
     async def _delete_file(self, filename: str) -> None:
         """Delete the gcode file via Moonraker's file manager"""
@@ -100,6 +101,7 @@ class DelGcode:
         """API endpoint to check the current state."""
         return {
             "pending_delete": self.pending_delete,
+            "config": {"delete_on": self.delete_on},
         }
 
 
