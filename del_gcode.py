@@ -99,7 +99,10 @@ class DelGcode:
 
     async def _handle_status_request(self, web_request) -> dict:
         """API endpoint to check the current state."""
-        return {"pending_delete": self.pending_delete, "config": self.delete_on}
+        return {
+            "pending_delete": self.pending_delete,
+            "config": {"delete_on": self.delete_on},
+        }
 
 
 def load_component(config: ConfigHelper) -> DelGcode:
